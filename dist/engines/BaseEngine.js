@@ -39,7 +39,7 @@ class BaseEngine {
             let output = '';
             let errorOutput = '';
             let isResolved = false;
-            const child = (0, child_process_1.spawn)(this.command, this.args, {
+            const child = (0, child_process_1.spawn)(this.command, [...this.args, code], {
                 stdio: ['pipe', 'pipe', 'pipe'],
                 timeout,
                 killSignal: 'SIGKILL',
@@ -110,20 +110,9 @@ class BaseEngine {
                 }
             });
             try {
-                child.stdin?.write(code);
                 child.stdin?.end();
             }
             catch (error) {
-                if (!isResolved) {
-                    isResolved = true;
-                    clearTimeout(timeoutId);
-                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                    resolve({
-                        success: false,
-                        error: `Failed to send code to process: ${errorMessage}`,
-                        executionTime: Date.now(),
-                    });
-                }
             }
         });
     }

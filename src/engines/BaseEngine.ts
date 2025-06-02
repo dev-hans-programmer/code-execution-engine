@@ -50,7 +50,7 @@ export abstract class BaseEngine {
       let errorOutput = '';
       let isResolved = false;
       
-      const child: ChildProcess = spawn(this.command, this.args, {
+      const child: ChildProcess = spawn(this.command, [...this.args, code], {
         stdio: ['pipe', 'pipe', 'pipe'],
         timeout,
         killSignal: 'SIGKILL',
@@ -131,21 +131,11 @@ export abstract class BaseEngine {
         }
       });
       
-      // Send code to stdin
+      // Close stdin since we're passing code as argument
       try {
-        child.stdin?.write(code);
         child.stdin?.end();
       } catch (error) {
-        if (!isResolved) {
-          isResolved = true;
-          clearTimeout(timeoutId);
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          resolve({
-            success: false,
-            error: `Failed to send code to process: ${errorMessage}`,
-            executionTime: Date.now(),
-          });
-        }
+        // Ignore stdin errors when using args
       }
     });
   }

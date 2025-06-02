@@ -8,58 +8,35 @@ class JavaScriptEngine extends BaseEngine_1.BaseEngine {
         super(...arguments);
         this.language = 'javascript';
         this.command = 'node';
-        this.args = ['--eval'];
+        this.args = ['-e'];
     }
     validateCode(code) {
         return security_1.SecurityValidator.validateJavaScriptCode(code);
     }
     prepareCode(code, input) {
         const wrappedCode = `
-      // Disable dangerous globals
-      delete require;
-      delete process;
-      delete global;
-      delete Buffer;
-      delete setImmediate;
-      delete clearImmediate;
-      
-      // Mock console for output capture
-      let capturedOutput = [];
-      const originalConsole = {
-        log: (...args) => capturedOutput.push(args.map(arg => 
-          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-        ).join(' ')),
-        error: (...args) => capturedOutput.push('ERROR: ' + args.map(arg => 
-          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-        ).join(' ')),
-        warn: (...args) => capturedOutput.push('WARN: ' + args.map(arg => 
-          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-        ).join(' ')),
-      };
-      
-      console = originalConsole;
-      
-      // Input handling
-      const input = ${JSON.stringify(input || '')};
-      const readline = {
-        question: (prompt, callback) => {
-          console.log(prompt);
-          callback(input);
-        }
-      };
-      
-      try {
-        // User code execution
-        ${code}
-        
-        // Output results
-        if (capturedOutput.length > 0) {
-          console.log(capturedOutput.join('\\n'));
-        }
-      } catch (error) {
-        console.error('Runtime Error: ' + error.message);
-        process.exit(1);
-      }
+try {
+  // Input handling
+  const input = ${JSON.stringify(input || '')};
+  let inputLines = input.split('\\n');
+  let inputIndex = 0;
+  
+  // Mock readline for input
+  const readline = {
+    question: (prompt, callback) => {
+      process.stdout.write(prompt);
+      const line = inputIndex < inputLines.length ? inputLines[inputIndex++] : '';
+      console.log(line);
+      callback(line);
+    }
+  };
+  
+  // User code
+  ${code}
+} catch (error) {
+  console.error('Runtime Error: ' + error.message);
+  process.exit(1);
+}
     `;
         return wrappedCode;
     }
