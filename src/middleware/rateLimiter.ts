@@ -22,7 +22,7 @@ class RateLimiter {
     }
   }
   
-  public middleware = (req: Request, res: Response<ApiResponse>, next: NextFunction) => {
+  public middleware = (req: Request, res: Response<ApiResponse>, next: NextFunction): void => {
     const clientKey = this.getClientKey(req);
     const now = Date.now();
     
@@ -61,12 +61,13 @@ class RateLimiter {
         limit: config.rateLimit.maxRequests,
       });
       
-      return res.status(429).json({
+      res.status(429).json({
         success: false,
         error: 'Rate limit exceeded',
         message: `Too many requests. Limit: ${config.rateLimit.maxRequests} per ${config.rateLimit.windowMs / 1000} seconds`,
         timestamp: now,
       });
+      return;
     }
     
     next();

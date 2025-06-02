@@ -13,16 +13,17 @@ export const validateExecutionRequest = (
   req: Request,
   res: Response<ApiResponse>,
   next: NextFunction
-) => {
+): void => {
   const { error, value } = executionSchema.validate(req.body);
   
   if (error) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: 'Validation failed',
       message: error.details[0].message,
       timestamp: Date.now(),
     });
+    return;
   }
   
   // Sanitize and normalize the validated data
@@ -40,14 +41,15 @@ export const validateContentType = (
   req: Request,
   res: Response<ApiResponse>,
   next: NextFunction
-) => {
+): void => {
   if (req.method !== 'GET' && !req.is('application/json')) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       error: 'Invalid content type',
       message: 'Content-Type must be application/json',
       timestamp: Date.now(),
     });
+    return;
   }
   
   next();

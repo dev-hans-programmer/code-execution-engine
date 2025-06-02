@@ -43,16 +43,17 @@ router.post(
       });
       
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Code execution request failed', {
         language: executionRequest.language,
-        error: error.message,
+        error: errorMessage,
         ip: req.ip,
       });
       
       res.status(500).json({
         success: false,
         error: 'Execution failed',
-        message: error.message,
+        message: errorMessage,
         timestamp: Date.now(),
       });
     }
@@ -89,16 +90,17 @@ router.post(
       });
       
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error('Queued execution request failed', {
         language: executionRequest.language,
-        error: error.message,
+        error: errorMessage,
         ip: req.ip,
       });
       
       res.status(500).json({
         success: false,
         error: 'Failed to queue execution',
-        message: error.message,
+        message: errorMessage,
         timestamp: Date.now(),
       });
     }
@@ -168,10 +170,11 @@ router.delete('/queue', (req: Request, res: Response<ApiResponse<{ clearedJobs: 
     });
     
   } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     res.status(500).json({
       success: false,
       error: 'Failed to clear queue',
-      message: error.message,
+      message: errorMessage,
       timestamp: Date.now(),
     });
   }

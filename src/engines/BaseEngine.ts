@@ -34,10 +34,11 @@ export abstract class BaseEngine {
         executionTime: Date.now() - startTime,
       };
     } catch (error) {
-      logger.error(`Execution error in ${this.language}`, { error: error.message });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Execution error in ${this.language}`, { error: errorMessage });
       return {
         success: false,
-        error: error.message,
+        error: errorMessage,
         executionTime: Date.now() - startTime,
       };
     }

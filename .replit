@@ -21,8 +21,8 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm install && npm run build && npm start"
+args = "npx tsc && node dist/app.js"
 waitForPort = 5000
 
 [deployment]
-run = ["sh", "-c", "npm install && npm run build && npm start"]
+run = ["sh", "-c", "npx tsc && node dist/app.js"]
