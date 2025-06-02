@@ -25,10 +25,11 @@ class BaseEngine {
             };
         }
         catch (error) {
-            logger_1.logger.error(`Execution error in ${this.language}`, { error: error.message });
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            logger_1.logger.error(`Execution error in ${this.language}`, { error: errorMessage });
             return {
                 success: false,
-                error: error.message,
+                error: errorMessage,
                 executionTime: Date.now() - startTime,
             };
         }
@@ -116,9 +117,10 @@ class BaseEngine {
                 if (!isResolved) {
                     isResolved = true;
                     clearTimeout(timeoutId);
+                    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
                     resolve({
                         success: false,
-                        error: `Failed to send code to process: ${error.message}`,
+                        error: `Failed to send code to process: ${errorMessage}`,
                         executionTime: Date.now(),
                     });
                 }

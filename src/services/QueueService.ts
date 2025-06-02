@@ -98,9 +98,10 @@ export class QueueService extends EventEmitter {
         this.emit('jobComplete', job);
         
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         logger.error('Job processing error', {
           jobId: job.id,
-          error: error.message,
+          error: errorMessage,
         });
         
         this.emit('jobError', job, error);

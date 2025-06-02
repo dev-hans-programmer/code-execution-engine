@@ -116,10 +116,11 @@ router.delete('/queue', (req, res) => {
         });
     }
     catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         res.status(500).json({
             success: false,
             error: 'Failed to clear queue',
-            message: error.message,
+            message: errorMessage,
             timestamp: Date.now(),
         });
     }

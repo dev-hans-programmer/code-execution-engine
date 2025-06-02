@@ -31,9 +31,10 @@ class ExecutionService {
                 });
             }
             catch (error) {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
                 logger_1.logger.error('Job execution failed', {
                     jobId: job.id,
-                    error: error.message,
+                    error: errorMessage,
                 });
             }
         });
@@ -65,13 +66,14 @@ class ExecutionService {
             return result;
         }
         catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             logger_1.logger.error('Code execution failed', {
                 language: request.language,
-                error: error.message,
+                error: errorMessage,
             });
             return {
                 success: false,
-                error: `Execution failed: ${error.message}`,
+                error: `Execution failed: ${errorMessage}`,
                 executionTime: 0,
             };
         }
@@ -82,7 +84,8 @@ class ExecutionService {
             return { jobId };
         }
         catch (error) {
-            throw new Error(`Failed to queue execution: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            throw new Error(`Failed to queue execution: ${errorMessage}`);
         }
     }
     getSupportedLanguages() {

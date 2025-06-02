@@ -139,9 +139,10 @@ export abstract class BaseEngine {
         if (!isResolved) {
           isResolved = true;
           clearTimeout(timeoutId);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           resolve({
             success: false,
-            error: `Failed to send code to process: ${error.message}`,
+            error: `Failed to send code to process: ${errorMessage}`,
             executionTime: Date.now(),
           });
         }
